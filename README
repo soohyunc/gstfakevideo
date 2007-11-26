@@ -1,0 +1,42 @@
+
+Compile and install:
+
+	make && make install
+
+	AMD64 users may need to add "-m32" to CFLAGS in Makefile
+
+Configuration:
+
+	Default configuration can be changed either in source or
+	in gstfakevideo script.
+
+	To change the install path, have a look inside the Makefile.
+
+Start:
+	Be sure that your skype is reachable over your PATH variable.
+	Then just type:
+
+	$ gstfakevideo [gst-launch syntax video pipe definition]
+
+Some examples:
+	Avatar image streaming:
+	gstfakevideo filesrc location=avatar.jpg ! jpegdec ! \
+			videoscale ! ffmpegcolorspace 
+
+	v4l source (i.e. webcam on /dev/video1) with vergotv effect:
+	(if your cam use /dev/video0, simply: mv /dev/video0 /dev/video1)
+
+	gstfakevideo v4lsrc device=/dev/video1 ! videoscale ! ffmpegcolorspace ! \
+			vertigotv ! ffmpegcolorspace ! autovideosink
+
+	gstfakevideo videotestsrc is-live=true
+	
+
+BUGS:
+	at present, gstfakevideo simulates only /dev/video0
+	properly, so if you have other video device configure it to use
+	device file other than /dev/video0
+
+
+Contact:
+	mrk@sed.pl

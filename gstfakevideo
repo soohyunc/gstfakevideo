@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+# setup gstfakevideo preload to hijack calls made
+# to /dev/video0
+#
+#This script runs Skype with libskype_dsp_hijacker.so "filter"
+#It allows redefining of what devices Skype uses for 
+#microphone, speakers and mixer (especially microphone and
+#speakers can use different devices)
+
+# -- CONFIGURATION --
+
+#default configuration when no option is specified
+
+export HIJACKVIDEO="/dev/video0"
+export GST_PIPE="videotestsrc is-live=true ! video/x-raw-yuv,width=640,height=480,framerate=10/1 ! videoscale ! ffmpegcolorspace ! vertigotv ! ffmpegcolorspace"
+
+function help {
+cat <<EOT
+
+Redirect Skype video to gstreamer pipeline
+
+Usage: $0 [pipeline definition, gst-launch syntax]
+
+Edit the script for full flexibility
+
+EOT
+}
+  
+
+case "$1" in 
+  -h|--help) help; exit;;
+# broken
+  --video) 
+    export HIJACKVIDEO="$2"
+    shift
+    shift
+    ;;
+esac
+
+export GST_PIPE="$*"
+
+test -n "$GST_PIPE" || unset GST_PIPE
+
+prefix=/usr/local
+exec_prefix=${prefix}
+
+#prefer use of libskype_dsp_hijacker from current directory
+if test -f ./libgstfakevideo.so; then 
+  libdir=.
+else
+  libdir=${exec_prefix}/lib
+fi
+
+LD_PRELOAD=${libdir}/libgstfakevideo.so
+if test -f /lib/libdl.so.2; then
+	LD_PRELOAD=$LD_PRELOAD:/lib/libdl.so.2
+fi
+export LD_PRELOAD
+
+# ! video/x-raw-yuv,width=320,height=240,format=(fourcc)YV12 ! identity"
+# invoke the program with the args given
+
+exec skype
