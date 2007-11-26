@@ -129,7 +129,7 @@ GstElement *create_pipeline ()
   gst_init (0,0);
 
   GstCaps *caps=gst_caps_new_simple("video/x-raw-yuv",
-  "format", GST_TYPE_FOURCC, GST_MAKE_FOURCC ('Y', 'V', '1', '2'),
+  "format", GST_TYPE_FOURCC, GST_MAKE_FOURCC ('I', '4', '2', '0'),
   "width",G_TYPE_INT,CAPS_WIDTH,
   "height",G_TYPE_INT,CAPS_HEIGHT,
 //  "framerate",GST_TYPE_FRACTION,25,1,
