@@ -1,0 +1,47 @@
+Compilation of skype_dsp_hijacker on AMD64
+by Danyel Ceccaldi, <danyel.ceccaldi@gmx.de>
+(original version: http://juljas.net/linux/skype/amd64.html)
+-----------------------------------------------------
+
+I want to submit informations back to you, as I tried to compile the library on
+opensuse10, on an AMD64 / x86_64 platform.  I encountered the following
+problem:
+
+  $ make
+  gcc -O2 -Wall -ldl -shared -fpic skype_dsp_hijacker.c -o libskype_dsp_hijacker.so
+  
+  $ file libskype_dsp_hijacker.so
+  libskype_dsp_hijacker.so: ELF 64-bit LSB shared object, AMD x86-64, version 1
+  (SYSV), not stripped
+
+  $ ./skype_dsp_hijacker skype
+  ERROR: ld.so: object './libskype_dsp_hijacker.so' from LD_PRELOAD cannot be
+  preloaded: ignored.
+
+Reason:
+on this environment, the default architecture to build is 64-Bit, but skype is
+32-bit.
+
+Simply adding CFLAGS=-m32 will not help, as the build environment is not
+prepared.
+
+Solution:
+assure the following rpm's are installed:
+glibc-devel-32bit
+glibc-locale-32bit
+glibc-32bit
+
+# cd /lib
+# ln -s /lib/libdl.so.2 libdl.so
+# ln -s /lib/libc.so.6 libc.so
+# rpm -i suse/x86_64/glibc-devel-32bit-2.3.5-40.x86_64.rpm
+
+$ gcc -m32 -ldl -shared -fpic skype_dsp_hijacker.c -o libskype_dsp_hijacker.so
+
+$ file libskype_dsp_hijacker.so
+libskype_dsp_hijacker.so: ELF 32-bit LSB shared object, Intel 80386, version 1
+(SYSV), not stripped
+
+
+(some hints indicated using also -L/lib, but it seems not necessary on
+opensuse10 or not necessary at all)
