@@ -1,0 +1,1 @@
+Userspace video driver providing fake video source from gstreamer pipeline.
